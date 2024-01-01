@@ -26,6 +26,7 @@ class FilterType(enum.Enum):
     HasAtLeastLetterAmount = 2
     HasExactLetterAmount = 3
     HasLetterExactPos = 4
+    AbsentLetterExactPos = 5
 
 
 class FilterRule:
@@ -38,7 +39,7 @@ class FilterRule:
                  letter: str,
                  pos: Optional[int] = None,
                  amount: Optional[int] = None) -> None:
-        assert (filter_type == FilterType.HasLetterExactPos) == (
+        assert (filter_type in (FilterType.HasLetterExactPos, FilterType.AbsentLetterExactPos)) == (
             pos is not None)
         assert (filter_type in (FilterType.HasAtLeastLetterAmount, FilterType.HasExactLetterAmount)) == (
             amount is not None)
@@ -57,6 +58,8 @@ class FilterRule:
                 return word.count(self.__letter) == self.__amount
             case FilterType.AbsentLetter:
                 return self.__letter not in word
+            case FilterType.AbsentLetterExactPos:
+                return len(word) > self.__pos and word[self.__pos] != self.__letter
             case _:
                 assert False
 
@@ -73,6 +76,9 @@ class FilterRule:
                       green_text("встречается ровно"), blue_text(str(self.__amount)), green_text("раз"))
             case FilterType.AbsentLetter:
                 print(green_text("Нету буквы"), blue_text(self.__letter))
+            case FilterType.AbsentLetterExactPos:
+                print(green_text("Нету буквы"), blue_text(self.__letter),
+                      green_text("На позиции"), blue_text(str(self.__pos + 1)))
             case _:
                 assert False
 
@@ -132,6 +138,9 @@ def add_word(filter_rules: List[FilterRule]):
         if c == 'E':
             added_rules.append(FilterRule(
                 FilterType.HasLetterExactPos, word[i], i))
+        elif c == 'M':
+            added_rules.append(FilterRule(
+                FilterType.AbsentLetterExactPos, word[i], i))
 
     # Add amount and absent filter rules
     letter_to_masks: Dict[str, List[str]] = {
