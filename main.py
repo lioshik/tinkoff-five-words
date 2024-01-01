@@ -47,7 +47,7 @@ class FilterRule:
         self.__amount = amount
         self.__letter = letter
 
-    def should_filter_word(self, word: str) -> bool:
+    def matches_condition(self, word: str) -> bool:
         match self.__filter_type:
             case FilterType.HasLetterExactPos:
                 return len(word) > self.__pos and word[self.__pos] == self.__letter
@@ -82,7 +82,7 @@ def apply_filter_rules(words: List[str], filter_rules: List[FilterRule]) -> List
     for word in words:
         add_to_res = True
         for filter in filter_rules:
-            if not filter.should_filter_word(word):
+            if not filter.matches_condition(word):
                 add_to_res = False
                 break
         if add_to_res:
