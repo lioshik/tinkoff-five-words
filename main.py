@@ -113,7 +113,8 @@ MASK_TUTORIAL = green_text("""\
 
 
 def add_word(filter_rules: List[FilterRule]):
-    word = input(green_text("Введите слово из пяти букв:")).split()[0].upper()
+    word = input(green_text("Введите слово из пяти букв:")
+                 ).split()[0].upper().replace('Ё', 'Е')
     print(green_text("Слово"), blue_text(word))
 
     if len(word) != 5:
@@ -172,7 +173,8 @@ def main():
 
     data = pd.read_csv("nouns.csv", sep='\t')
     raw_words = list(data.bare)
-    words = [word.upper() for word in raw_words if len(word) == 5]
+    words = [word.upper().replace('Ё', 'Е')
+             for word in raw_words if len(word) == 5]
     filter_rules: List[FilterRule] = []
 
     while True:
